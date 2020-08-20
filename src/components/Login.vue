@@ -2,18 +2,24 @@
   <div class="login_container">
     <div class="login_box">
       <div class="avatar_box">
-        <img src="../assets/logo.png" alt />
+        <img
+          src="../assets/logo.png"
+          alt
+        >
       </div>
       <el-form
+        ref="loginFormRef"
         label-width="0px"
         class="login_form"
         :model="loginForm"
         :rules="loginRules"
-        ref="loginFormRef"
       >
         <!-- 用户名 -->
         <el-form-item prop="username">
-          <el-input v-model="loginForm.username" prefix-icon="iconfont icon-user"></el-input>
+          <el-input
+            v-model="loginForm.username"
+            prefix-icon="iconfont icon-user"
+          />
         </el-form-item>
         <!-- 密码 -->
         <el-form-item prop="password">
@@ -21,12 +27,22 @@
             v-model="loginForm.password"
             prefix-icon="iconfont icon-3702mima"
             type="password"
-          ></el-input>
+          />
         </el-form-item>
         <!-- 按钮 -->
         <el-form-item class="btns">
-          <el-button type="primary" @click="login">登录</el-button>
-          <el-button type="info" @click="resetLoginForm">重置</el-button>
+          <el-button
+            type="primary"
+            @click="login"
+          >
+            登录
+          </el-button>
+          <el-button
+            type="info"
+            @click="resetLoginForm"
+          >
+            重置
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -39,12 +55,12 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '123456',
+        password: '123456'
       },
       loginRules: {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+          { min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur' }
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
@@ -52,10 +68,10 @@ export default {
             min: 6,
             max: 13,
             message: '长度在 6 到 13 个字符',
-            trigger: 'blur',
-          },
-        ],
-      },
+            trigger: 'blur'
+          }
+        ]
+      }
     }
   },
   methods: {
@@ -67,14 +83,13 @@ export default {
         // console.log(valid)
         if (!valid) return
         const { data: res } = await this.$http.post('login', this.loginForm)
-        if (res.meta.status !== 200)
-          return this.$message.error('用户名或密码错误!')
+        if (res.meta.status !== 200) { return this.$message.error('用户名或密码错误!') }
         this.$message.success('登陆成功')
-        window.sessionStorage.setItem('Token',res.data.token)
+        window.sessionStorage.setItem('Token', res.data.token)
         this.$router.push('/home')
       })
-    },
-  },
+    }
+  }
 }
 </script>
 
