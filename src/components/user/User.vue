@@ -54,7 +54,12 @@
           ></el-button>
           <!-- 分配角色 -->
           <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-            <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+            <el-button
+              type="warning"
+              icon="el-icon-setting"
+              size="mini"
+              @click="showSetUserRoleDialog(scope.row)"
+            ></el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -111,6 +116,26 @@
         <el-button type="primary" @click="editUser">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 分配角色 -->
+    <el-dialog title="分配角色" :visible.sync="setUserRoleDialogVisible" width="50%" @close="clearSetUserRoleDialog">
+      <p>当前用户: {{user.username}}</p>
+      <p>当前角色: {{user.role_name}}</p>
+      <p>
+        分配角色:
+        <el-select v-model="selectedRoleId" placeholder="请选择">
+          <el-option
+            v-for="item in roleList"
+            :key="item.id"
+            :label="item.roleName"
+            :value="item.id"
+          ></el-option>
+        </el-select>
+      </p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setUserRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveUserRole">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -147,6 +172,14 @@ export default {
       addDialogVisible: false,
       //控制修改用户对话框的显示和隐藏
       editDialogVisible: false,
+      //控制分配角色dialog窗口显示与关闭
+      setUserRoleDialogVisible: false,
+      //角色列表
+      roleList: [],
+      //即将分配角色的user
+      user: {},
+      //选中的角色id
+      selectedRoleId: '',
       //添加用户表单数据
       addForm: {
         username: '',
@@ -297,12 +330,34 @@ export default {
           type: 'warning',
         }
       ).catch((error) => error)
-      if (confirmResult !== 'confirm') return this.$message.info('已取消了删除 !')
-      const {data: res} = await this.$http.delete(`users/${id}`)
-      if(res.meta.status !== 200) return this.$message.error('删除失败 !')
+      if (confirmResult !== 'confirm')
+        return this.$message.info('已取消了删除 !')
+      const { data: res } = await this.$http.delete(`users/${id}`)
+      if (res.meta.status !== 200) return this.$message.error('删除失败 !')
       this.getUserList()
       this.$message.success('删除成功 !')
     },
+    async showSetUserRoleDialog(user) {
+      this.user = user
+      const { data: res } = await this.$http.get('roles')
+      this.roleList = res.data
+      this.setUserRoleDialogVisible = true
+    },
+    //点击按钮分配角色
+    async saveUserRole() {
+      if (!this.selectedRoleId) return this.$message.error('请选择所属角色')
+      const { data: res } = await this.$http.put(`users/${this.user.id}/role`, {
+        rid: this.selectedRoleId,
+      })
+      if (res.meta.status !== 200) return this.$message.error('分配角色失败 !')
+      this.setUserRoleDialogVisible = false
+      this.getUserList()
+      this.$message.success('分配角色成功 !')
+    },
+    //关闭分配角色窗口清空select选框
+    clearSetUserRoleDialog() {
+      this.selectedRoleId = ''
+    }
   },
 }
 </script>
