@@ -256,10 +256,11 @@ export default {
         params: this.queryInfo,
       })
       if (res.meta.status !== 200) {
-        return this.$message.error(res.meta.meg)
+        return this.$message.error('获取用户列表失败!')
       }
       this.userList = res.data.users
       this.totalSize = res.data.total
+      this.$message.success('获取用户列表成功!')
     },
     handleSizeChange(newPageSize) {
       this.queryInfo.pagesize = newPageSize
@@ -275,9 +276,9 @@ export default {
       )
       if (res.meta.status !== 200) {
         user.mg_state = !user.mg_state
-        return this.$message.error(res.meta.msg)
+        return this.$message.error('修改状态失败!')
       }
-      this.$message.success(res.meta.msg)
+      this.$message.success('修改状态成功!')
     },
     addDialogClosed() {
       this.$refs.addFormRef.resetFields()
@@ -291,16 +292,16 @@ export default {
         const { data: res } = await this.$http.post('users', this.addForm)
         if (res.meta.status !== 201) {
           this.addDialogVisible = false
-          return this.$message.error(res.meta.msg)
+          return this.$message.error('添加用户失败!')
         }
         this.addDialogVisible = false
         this.getUserList()
-        this.$message.success(res.meta.msg)
+        this.$message.success('成功添加用户!')
       })
     },
     async showEditDialog(id) {
       const { data: res } = await this.$http.get(`users/${id}`)
-      if (res.meta.status !== 200) return $message.error(res.meta.msg)
+      if (res.meta.status !== 200) return $message.error('获取用户信息失败!')
       this.editForm = res.data
       this.editDialogVisible = true
     },
@@ -313,11 +314,11 @@ export default {
         )
         if (res.meta.status !== 200) {
           this.editDialogVisible = false
-          return $message.error(res.meta.msg)
+          return $message.error('修改用户信息失败!')
         }
         this.getUserList()
         this.editDialogVisible = false
-        this.$message.success(res.meta.msg)
+        this.$message.success('修改用户信息成功!')
       })
     },
     async deleteUserById(id) {
